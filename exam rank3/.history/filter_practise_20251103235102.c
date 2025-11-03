@@ -1,0 +1,13 @@
+#include _GNU_SOURCE
+#include <unistd.h>
+#include <strings.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void	replac_all(char *buf, size_t len, char *pat, size_t plen)
+{
+	char	*cur;
+	char	*
+
+}

@@ -1,19 +1,14 @@
-#define _GNU_SOURCE
-# define BUFFER_SIZE 1024
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-static void	fill_stars(char *found, size_t plen)
-{
-	size_t	i = 0;
-	while (i < plen)
-		found[i++] = '*';
-}
 
-static void	replace_all(char *buf, size_t len, const char *pat, size_t plen)
+#define BUFFER_SIZE 1024
+#endif
+
+void	replac_all(char *buf, size_t len, char *pat, size_t plen)
 {
 	char	*cur;
 	char	*found;
@@ -25,25 +20,25 @@ static void	replace_all(char *buf, size_t len, const char *pat, size_t plen)
 		found = memmem(cur, len, pat, plen);
 		if (!found)
 			break ;
-		fill_stars(found, plen);
-		adv = (found + plen) - cur;
+		memset(found, '*', plen);
+		adv =(found + plen) - cur;
 		cur += adv;
 		len -= adv;
 	}
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char *argv)
 {
-	char *buf;
+	char	*buf;
+	char	*pat;
 	size_t	len;
-	const char	*pat;
 	size_t	plen;
-	ssize_t	r;
 	size_t	carry;
 	size_t	keep;
+	ssize_t	r;
 
-	if (argc != 2 || !*argv[1])
-		return (1);
+	if (argc != 2 || !argv[1])
+		return(perror("Error"), 1);
 	carry = 0;
 	pat = argv[1];
 	plen = strlen(pat);
@@ -62,11 +57,11 @@ int	main(int argc, char **argv)
 	}
 	while (r > 0)
 	{
-		len = carry + r;
-		replace_all(buf, len, pat, plen);
+		len = r + carry;
 		if (len > keep)
 		{
-			if (write(1, buf, len - keep) < 0)
+			replace_all(buf, len, pat, plen);
+			if (write(1, buf, buf + len - keep) < 0)
 			{
 				free(buf);
 				return (perror("Error"), 1);
@@ -76,7 +71,7 @@ int	main(int argc, char **argv)
 		}
 		else
 			carry = len;
-		r = read(0, buf, BUFFER_SIZE + carry);
+		r = read(0, buf, BUFFER_SIZE);
 		if (r < 0)
 		{
 			free(buf);
@@ -85,13 +80,12 @@ int	main(int argc, char **argv)
 	}
 	if (carry > 0)
 	{
-		replace_all(buf, carry, pat, plen);
+		replace_all(buf, len, pat, plen);
 		if (write(1, buf, carry) < 0)
 		{
 			free(buf);
-			return(perror("Error"), 1);
+			return (perror("Error"), 1);
 		}
 	}
 	return (0);
 }
-

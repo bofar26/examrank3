@@ -13,6 +13,7 @@ static void	fill_stars(char *found, size_t plen)
 		found[i++] = '*';
 }
 
+
 static void	replace_all(char *buf, size_t len, const char *pat, size_t plen)
 {
 	char	*cur;
@@ -25,7 +26,7 @@ static void	replace_all(char *buf, size_t len, const char *pat, size_t plen)
 		found = memmem(cur, len, pat, plen);
 		if (!found)
 			break ;
-		fill_stars(found, plen);
+		ft_memset(found, '*', plen);
 		adv = (found + plen) - cur;
 		cur += adv;
 		len -= adv;

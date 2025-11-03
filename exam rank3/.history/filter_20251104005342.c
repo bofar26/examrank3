@@ -6,11 +6,15 @@
 #include <stdio.h>
 #include <unistd.h>
 
-static void	fill_stars(char *found, size_t plen)
+static void	*ft_memset(char *found, int word, size_t plen)
 {
-	size_t	i = 0;
+	int	i = 0;
+
 	while (i < plen)
-		found[i++] = '*';
+	{
+		found[i] = word;
+		i ++;
+	}
 }
 
 static void	replace_all(char *buf, size_t len, const char *pat, size_t plen)
@@ -25,7 +29,7 @@ static void	replace_all(char *buf, size_t len, const char *pat, size_t plen)
 		found = memmem(cur, len, pat, plen);
 		if (!found)
 			break ;
-		fill_stars(found, plen);
+		ft_memset(found, '*', plen);
 		adv = (found + plen) - cur;
 		cur += adv;
 		len -= adv;
