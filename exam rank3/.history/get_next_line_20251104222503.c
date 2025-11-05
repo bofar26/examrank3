@@ -1,0 +1,100 @@
+#inclue "get_next_line.h"
+
+size_t	ft_strlen(char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s && s[i])
+		i++;
+	return (i);
+}
+
+char	*ft_strchr(char *s, int c)
+{
+	size_t	i;
+
+	i = 0;
+	while (s && s[i] && s[i] != (char)c)
+		i++;
+	if (s && s[i] == (char)c)
+		return (s + i);
+	return (NULL);
+}
+
+void	*ft_memcpy(void *dst, const void *src, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < n)
+	{
+		((char *)dst)[i] = ((char *)src)[i];
+		i++;
+	}
+	return (dst);
+}
+
+int	str_append_mem(char **s1, char *s2, size_t n)
+{
+	size_t	len1;
+	char	*tmp;
+
+	len1 = *s1 ? ft_strlen(*s1) : 0;
+	tmp = malloc(len1 + n + 1);
+	if (!tmp)
+		return (0);
+	if (*s1)
+		ft_memcpy(tmp, *s1, len1);
+	if (s2 && n)
+		ft_memcpy(tmp + len1, s2, n);
+	tmp[len1 + n] = '\0';
+	free(*s1);
+	*s1 = tmp;
+	return (1);
+}
+
+void	shift_left(char *b, size_t from)
+{
+	size_t	i;
+
+	i = 0;
+	while (b[from + i])
+	{
+		b[i] = b[from + i];
+		i++;
+	}
+	b[i] = '\0';
+}
+
+char	*get_next_line(int fd)
+{
+	static char	b[BUFFER_SIZE + 1];
+	char		*line;
+	char		*nl;
+	ssize_t		r;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	line = NULL;
+	while (1)
+	{
+		nl = ft_strchr(b, '\n');
+		if (nl)
+		{
+			if (!str_append_mem(&line, b, nl - b + 1))
+				return (free(line), NULL);
+			shift_left(b, nl - b + 1);
+			return (line);
+		}
+		if (b[0] && !str_append_mem(&line, b, ft_strlen(b)))
+			return (free(line), NULL);
+		b[0] = '\0';
+		r = read(fd, b, BUFFER_SIZE);
+		if (r < 0)
+			return (free(line), NULL);
+		if (r == 0)
+			return ((!line || !*line) ? (free(line), NULL) : line);
+		b[r] = '\0';
+	}
+}
