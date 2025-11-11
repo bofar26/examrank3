@@ -2,11 +2,11 @@
 
 size_t	ft_strlen(char *str)
 {
-	size_t	i = 0;
+	size_t	len = 0;
 
-	while (str && str[i])
-		i ++;
-	return (i);
+	while (str && str[len])
+		len ++;
+	return (len);
 }
 
 char	*ft_strchr(char *str, int c)
@@ -15,7 +15,7 @@ char	*ft_strchr(char *str, int c)
 
 	while (str && str[i] && str[i] != (char)c)
 		i ++;
-	if (str && str[i] == (char)c)
+	if (str && str[i] && str[i] == (char)c)
 		return (str + i);
 	return (NULL);
 }
@@ -38,11 +38,11 @@ int	str_append_mem(char **s1, char *s2, size_t n)
 	char	*tmp;
 
 	len1 = *s1 ? ft_strlen(*s1) : 0;
-	tmp = (char *)malloc(len1 + n + 1);
+	tmp = malloc(len1 + n + 1);
 	if (!tmp)
 		return (0);
 	if (*s1)
-		ft_memcpy(tmp,*s1, len1);
+		ft_memcpy(tmp, *s1, len1);
 	if (s2 && n)
 		ft_memcpy(tmp + len1, s2, n);
 	tmp[len1 + n] = '\0';
@@ -51,13 +51,13 @@ int	str_append_mem(char **s1, char *s2, size_t n)
 	return (1);
 }
 
-void	shift_left(char *b, size_t from)
+void	shift_left(char *b, int from)
 {
-	size_t	i = 0;
+	int	i = 0;
 
-	while (b[from + i])
+	while (b[i + from])
 	{
-		b[i] = b[from + i];
+		b[i] = b[i + from];
 		i ++;
 	}
 	b[i] = '\0';
@@ -80,7 +80,7 @@ char	*get_next_line(int fd)
 		{
 			if (!str_append_mem(&line, b, nl - b + 1))
 				return (free(line), NULL);
-			shift_left(b, nl - b + 1);
+			shift_left(b, nl- b + 1);
 			return (line);
 		}
 		if (b[0] && !str_append_mem(&line, b, ft_strlen(b)))
@@ -94,4 +94,29 @@ char	*get_next_line(int fd)
 		b[r] = '\0';
 	}
 }
+/*
+#include <stdio.h>
+#include <fcntl.h>
 
+int	main(int argc, char **argv)
+{
+	char	*line;
+	int	fd;
+	int	i = 1;
+	char	*file;
+
+	if (argc < 2 || !*argv[1])
+		return (1);
+	file = argv[1];
+	fd = open(file, O_RDONLY);
+	if (fd < 0)
+		return (1);
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("line %d %s", i, line);
+		free(line);
+		i ++;
+	}
+	free(line);
+	return (0);
+}*/

@@ -1,16 +1,16 @@
 #define _GNU_SOURCE
 #define BUFFER_SIZE 1024
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
 
-void	fill_stars(char *str, size_t plen)
+static void	fill_stars(char *str, size_t n)
 {
 	size_t	i = 0;
 
-	while (i < plen)
+	while(i < n)
 	{
 		str[i] = '*';
 		i ++;
@@ -19,8 +19,8 @@ void	fill_stars(char *str, size_t plen)
 
 void	replace_all(char *buf, size_t len, char *pat, size_t plen)
 {
-	char	*cur;
 	char	*found;
+	char	*cur;
 	size_t	adv;
 
 	cur = buf;
@@ -30,7 +30,7 @@ void	replace_all(char *buf, size_t len, char *pat, size_t plen)
 		if (!found)
 			break ;
 		fill_stars(found, plen);
-		adv = (found + plen) - cur;
+		adv = found + plen - cur;
 		cur += adv;
 		len -= adv;
 	}
@@ -42,20 +42,19 @@ int	main(int argc, char **argv)
 	char	*pat;
 	size_t	len;
 	size_t	plen;
-	size_t	carry;
 	size_t	keep;
+	size_t	carry;
 	ssize_t	r;
 
-	if (argc != 2 || !argv[1][0])
+	if (argc !=2 || !*argv[1])
 		return (1);
 	pat = argv[1];
-	plen = strlen(pat);
-	carry = 0;
+	plen = strlen(argv[1]);
 	if (plen > 1)
-		keep = plen -1;
+		keep = plen - 1;
 	else
 		keep = 0;
-	buf = malloc(BUFFER_SIZE + keep);
+	buf = (char *)malloc(BUFFER_SIZE + keep);
 	if (!buf)
 		return (perror("Error"), 1);
 	r = read(0, buf, BUFFER_SIZE);
@@ -98,4 +97,3 @@ int	main(int argc, char **argv)
 	}
 	return (0);
 }
-
